@@ -1,0 +1,49 @@
+# asm2chain workspace artifacts
+
+# Pipeline outputs
+results/
+logs/
+staged/
+
+# User config (the template `config.example.yaml` is tracked; user copies are not)
+config.yaml
+
+# Intermediate / large data
+*.paf
+*.fa
+*.fa.fai
+*.fa.gz
+*.fasta
+*.fasta.fai
+*.fasta.gz
+*.fai
+*.mmi
+*.chain
+*.chain.gz
+
+# Snakemake state
+.snakemake/
+*.snakemake.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.tox/
+build/
+dist/
+.venv/
+venv/
+
+# Editors / OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

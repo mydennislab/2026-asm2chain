@@ -1,0 +1,62 @@
+# asm2chain example configuration
+#
+# Copy this file to `config.yaml` and edit. Then run:
+#   snakemake -s Snakefile --configfile config.yaml -n           # dry-run
+#   snakemake -s Snakefile --configfile config.yaml --cores 32   # local
+
+# Required: assemblies and labels
+# `label_a` and `label_b` are used to name outputs; pick short, filename-safe
+# identifiers (letters, digits, dot, underscore, hyphen).
+#
+# `assembly_a` and `assembly_b` may be plain FASTA or gzipped (`.gz`); they
+# will be staged into ./staged/ during the run.
+label_a: asmA
+label_b: asmB
+
+assembly_a: /path/to/assembly_A.fa
+assembly_b: /path/to/assembly_B.fa.gz
+
+
+# minimap2 preset
+# asm5  ~0.1% divergence (same haplotype / curated same-species assemblies)
+# asm10 ~1%  divergence (closely related strains / species)
+# asm20 ~5%  divergence (more divergent species)
+# See https://lh3.github.io/minimap2/minimap2.html for full details.
+minimap2_preset: asm5
+
+
+# Compute resources
+# Threads and memory for the (single) minimap2 step per direction.
+# Large mammalian assemblies (~2.5 Gb) typically need ~80-100 GB RAM and
+# benefit from 16+ threads.
+align_threads: 32
+align_mem_mb: 98304          # 96 GiB
+align_runtime_min: 720       # 12 hours
+
+# Resources for transanno + chainSort + stats. These steps are quick.
+chain_mem_mb: 16384          # 16 GiB
+chain_runtime_min: 120       # 2 hours
+
+
+# Tool binaries
+# Override these if the binaries are not on PATH. Defaults look up by name.
+# minimap2:   /path/to/minimap2
+# transanno:  /path/to/transanno
+# chainsort:  /path/to/chainSort
+# samtools:   /path/to/samtools
+
+
+# Output layout
+# Defaults are usually fine. Paths are interpreted relative to the snakemake
+# working directory (i.e. where you invoke `snakemake` from).
+# results_dir: results
+# logs_dir:    logs
+# stage_dir:   staged
+
+
+# Example: cross-species (asm10) configuration
+# label_a: meadow
+# label_b: prairie
+# assembly_a: /path/to/meadow_hap1.fa.gz
+# assembly_b: /path/to/prairie_hap1.fa
+# minimap2_preset: asm10
