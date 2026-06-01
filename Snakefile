@@ -160,9 +160,9 @@ rule align_to:
 # 3. PAF -> UCSC chain (transanno)
 rule paf_to_chain:
     """
-    Convert a target-anchored PAF to an unsorted UCSC chain via
-    `transanno minimap2chain`. The chain inherits the target/query roles
-    from the PAF, so target_{label}.paf -> chain whose target is {label}.
+    Convert a PAF to an unsorted UCSC chain via `transanno minimap2chain`.
+    transanno sets the chain target (reference) to the PAF *query*, so
+    target_{label}.paf -> chain whose target is the assembly other than {label}.
     """
     input:
         paf=f"{RESULTS_DIR}/align/target_{{label}}.paf",
@@ -182,14 +182,10 @@ rule paf_to_chain:
 
 
 # 4. Sort + gzip the chain
-# Naming: a chain whose target is X lifts X coordinates onto the query, which
-# is the *other* assembly. So target_A.chain lifts A -> B and is published as
-# {labelA}_to_{labelB}.chain.gz.
-def _sorted_chain_target(wc):
-    # source label is the target of the chain
-    return wc.src
-
-
+# transanno sets the chain target to the PAF query (the *other* assembly), so
+# target_{X}.paf yields a chain whose target is the assembly other than X.
+# To publish {src}_to_{dst}.chain.gz (lifts src -> dst, i.e. target = src) we
+# therefore take the chain built from target_{dst}.paf.
 rule sort_and_gzip_chain:
     """
     Sort the unsorted chain by score with UCSC chainSort and gzip the result.
@@ -197,7 +193,7 @@ rule sort_and_gzip_chain:
       <target_label>_to_<query_label>.chain.gz lifts target -> query coords.
     """
     input:
-        chain=f"{RESULTS_DIR}/chain_unsorted/target_{{src}}.unsorted.chain",
+        chain=f"{RESULTS_DIR}/chain_unsorted/target_{{dst}}.unsorted.chain",
     output:
         chain_gz=f"{RESULTS_DIR}/{{src}}_to_{{dst}}.chain.gz",
     log:
